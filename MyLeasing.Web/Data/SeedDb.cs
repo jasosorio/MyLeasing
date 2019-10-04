@@ -50,10 +50,15 @@ namespace MyLeasing.Web.Data
                     Owner = owner,
                     Price = 800000M,
                     Property = property,
-                    Remarks = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nec iaculis ex. Nullam gravida nunc eleifend, placerat tellus a, eleifend metus. Phasellus id suscipit magna." + "" +
-                    "Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam volutpat ultrices ex, sed cursus sem tincidunt ut. Nullam metus lorem, convallis quis dignissim" + 
-                    "quis, porttitor quis leo. In hac habitasse platea dictumst. Duis pharetra sed arcu ac viverra. Proin dapibus lobortis commodo. Vivamus non commodo est, ac vehicula augue. Nam enim felis," + 
-                    "rutrum in tortor sit amet, efficitur hendrerit augue. Cras pellentesque nisl eu maximus tempor. Curabitur eu efficitur metus. Sed ultricies urna et auctor commodo."
+                    Remarks = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                    "Mauris nec iaculis ex. Nullam gravida nunc eleifend, placerat tellus a, " +
+                    "eleifend metus. Phasellus id suscipit magna. Orci varius natoque penatibus et " +
+                    "magnis dis parturient montes, nascetur ridiculus mus. Nullam volutpat ultrices ex, " +
+                    "sed cursus sem tincidunt ut. Nullam metus lorem, convallis quis dignissim quis, " +
+                    "porttitor quis leo. In hac habitasse platea dictumst. Duis pharetra sed arcu ac " +
+                    "viverra. Proin dapibus lobortis commodo. Vivamus non commodo est, ac vehicula augue. " +
+                    "Nam enim felis, rutrum in tortor sit amet, efficitur hendrerit augue. Cras pellentesque " +
+                    "nisl eu maximus tempor. Curabitur eu efficitur metus. Sed ultricies urna et auctor commodo."
                 });
 
                 await _context.SaveChangesAsync();
@@ -98,7 +103,6 @@ namespace MyLeasing.Web.Data
 
             return user;
         }
-
 
         private async Task CheckRoles()
         {

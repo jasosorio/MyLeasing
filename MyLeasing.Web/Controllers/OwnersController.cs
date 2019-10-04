@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -33,8 +32,7 @@ namespace MyLeasing.Web.Controllers
             _combosHelper = combosHelper;
             _converterHelper = converterHelper;
         }
-
-        // GET: Owners
+            
         public IActionResult Index()
         {
             return View(_dataContext.Owners
@@ -43,8 +41,6 @@ namespace MyLeasing.Web.Controllers
                 .Include(o => o.Contracts));
         }
 
-
-        // GET: Owners/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -53,13 +49,13 @@ namespace MyLeasing.Web.Controllers
             }
 
             var owner = await _dataContext.Owners
-            .Include(o => o.User)
-            .Include(o => o.Properties)
-            .ThenInclude(p => p.PropertyType)
-            .Include(o => o.Properties)
-            .ThenInclude(p => p.PropertyImages)
-            .Include(o => o.Contracts)
-            .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(o => o.User)
+                .Include(o => o.Properties)
+                .ThenInclude(p => p.PropertyImages)
+                .Include(o => o.Contracts)
+                .ThenInclude(c => c.Lessee)
+                .ThenInclude(l => l.User)
+                .FirstOrDefaultAsync(o => o.Id == id);
             if (owner == null)
             {
                 return NotFound();
@@ -75,57 +71,54 @@ namespace MyLeasing.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AddUserViewModel view)
+        public async Task<IActionResult> Create(AddUserViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = await AddUser(view);
-                if (user == null)
+                var user = await CreateUserAsync(model);
+                if (user != null)
                 {
-                    ModelState.AddModelError(string.Empty, "This email is already used.");
-                    return View(view);
+                    var owner = new Owner
+                    {
+                        Contracts = new List<Contract>(),
+                        Properties = new List<Property>(),
+                        User = user
+                    };
+
+                    _dataContext.Owners.Add(owner);
+                    await _dataContext.SaveChangesAsync();
+                    return RedirectToAction("Index");
                 }
-
-                var owner = new Owner
-                {
-                    Properties = new List<Property>(),
-                    Contracts = new List<Contract>(),
-                    User = user,
-                };
-
-                _dataContext.Owners.Add(owner);
-                await _dataContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+    
+                ModelState.AddModelError(string.Empty, "User with this eamil already exists.");
             }
 
-            return View(view);
+            return View(model);
         }
 
-        private async Task<User> AddUser(AddUserViewModel view)
+        private async Task<User> CreateUserAsync(AddUserViewModel model)
         {
             var user = new User
             {
-                Address = view.Address,
-                Document = view.Document,
-                Email = view.Username,
-                FirstName = view.FirstName,
-                LastName = view.LastName,
-                PhoneNumber = view.PhoneNumber,
-                UserName = view.Username
+                Address = model.Address,
+                Document = model.Document,
+                Email = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                PhoneNumber = model.PhoneNumber,
+                UserName = model.Username
             };
 
-            var result = await _userHelper.AddUserAsync(user, view.Password);
-            if (result != IdentityResult.Success)
+            var result = await _userHelper.AddUserAsync(user, model.Password);
+            if (result.Succeeded)
             {
-                return null;
+                user = await _userHelper.GetUserByEmailAsync(model.Username);
+                await _userHelper.AddUserToRoleAsync(user, "Owner");
+                return user;
             }
 
-            var newUser = await _userHelper.GetUserByEmailAsync(view.Username);
-            await _userHelper.AddUserToRoleAsync(newUser, "Owner");
-            return newUser;
+            return null;
         }
-
-
 
         // GET: Owners/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -219,33 +212,33 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var owner = await _dataContext.Owners.FindAsync(id.Value);
+            var owner = await _dataContext.Owners.FindAsync(id);
             if (owner == null)
             {
                 return NotFound();
             }
 
-            var view = new PropertyViewModel
+            var model = new PropertyViewModel
             {
                 OwnerId = owner.Id,
                 PropertyTypes = _combosHelper.GetComboPropertyTypes()
             };
 
-            return View(view);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProperty(PropertyViewModel view)
+        public async Task<IActionResult> AddProperty(PropertyViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var property = await _converterHelper.ToPropertyAsync(view);
+                var property = await _converterHelper.ToPropertyAsync(model, true);
                 _dataContext.Properties.Add(property);
                 await _dataContext.SaveChangesAsync();
-                return RedirectToAction($"{nameof(Details)}/{view.OwnerId}");
+                return RedirectToAction($"Details/{model.OwnerId}");
             }
 
-            return View(view);
+            return View(model);
         }
     }
 }

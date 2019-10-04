@@ -15,13 +15,9 @@ namespace MyLeasing.Web.Controllers
             _userHelper = userHelper;
         }
 
+        [HttpGet]
         public IActionResult Login()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             return View();
         }
 
@@ -40,12 +36,14 @@ namespace MyLeasing.Web.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
+
+                ModelState.AddModelError(string.Empty, "User or password incorrect.");
             }
 
-            ModelState.AddModelError(string.Empty, "Failed to login.");
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _userHelper.LogoutAsync();

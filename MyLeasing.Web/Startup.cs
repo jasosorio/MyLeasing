@@ -26,7 +26,6 @@ namespace MyLeasing.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
@@ -43,7 +42,8 @@ namespace MyLeasing.Web
                 cfg.Password.RequireLowercase = false;
                 cfg.Password.RequireNonAlphanumeric = false;
                 cfg.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<DataContext>();
+            })
+                .AddEntityFrameworkStores<DataContext>();
 
 
             services.AddDbContext<DataContext>(cfg =>
