@@ -1,11 +1,7 @@
 ﻿using MyLeasing.Common.Models;
 using MyLeasing.Common.Services;
 using Prism.Commands;
-using Prism.Mvvm;
 using Prism.Navigation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MyLeasing.Prism.ViewModels
 {
@@ -50,7 +46,7 @@ namespace MyLeasing.Prism.ViewModels
                 await App.Current.MainPage.DisplayAlert("Error", "You must enter an email.", "Accept");
                 return;
             }
-        
+
             if (string.IsNullOrEmpty(Password))
             {
                 await App.Current.MainPage.DisplayAlert("Error", "You must enter a password.", "Accept");
@@ -74,11 +70,13 @@ namespace MyLeasing.Prism.ViewModels
             IsEnabled = true;
 
             if (!response.IsSuccess)
-                {
-                    await App.Current.MainPage.DisplayAlert("Error", "User or password incorrect.", "Accept");
-                    Password = string.Empty;
-                    return;
-                }
+            {
+                await App.Current.MainPage.DisplayAlert("Error", "User or password incorrect.", "Accept");
+                Password = string.Empty;
+                return;
+            }
+
+            var token = response.Result;
 
             await App.Current.MainPage.DisplayAlert("Ok", "Fuck yeah!!!", "Accept");
         }
