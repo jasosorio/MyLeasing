@@ -1,4 +1,6 @@
-﻿using MyLeasing.Common.Models;
+﻿using MyLeasing.Common.Helpers;
+using MyLeasing.Common.Models;
+using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Navigation;
 using System;
@@ -20,6 +22,8 @@ namespace MyLeasing.Prism.ViewModels
         public DelegateCommand SelectPropertyCommand => _selectPropertyCommand ?? (_selectPropertyCommand = new DelegateCommand(SelectProperty));
         private async void SelectProperty()
         {
+            Settings.PropertyImages = JsonConvert.SerializeObject(PropertyImages);
+
             var parameters = new NavigationParameters
             {
                 { "Property", this }
