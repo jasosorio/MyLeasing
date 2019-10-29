@@ -22,13 +22,12 @@ namespace MyLeasing.Prism.ViewModels
         public DelegateCommand SelectPropertyCommand => _selectPropertyCommand ?? (_selectPropertyCommand = new DelegateCommand(SelectProperty));
         private async void SelectProperty()
         {
-            Settings.PropertyImages = JsonConvert.SerializeObject(PropertyImages);
 
             var parameters = new NavigationParameters
             {
                 { "Property", this }
             };
-            await _navigationService.NavigateAsync("PropertyPage", parameters);
+            await _navigationService.NavigateAsync("ContractsPage", parameters);
         }
     }
 }
