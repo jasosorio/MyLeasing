@@ -25,7 +25,7 @@ namespace MyLeasing.Prism.ViewModels
 
             var parameters = new NavigationParameters
             {
-                { "Property", this }
+                { "property", this }
             };
             await _navigationService.NavigateAsync("ContractsPage", parameters);
         }

@@ -36,6 +36,7 @@ namespace MyLeasing.Prism.ViewModels
 
         private void LoadContracts()
         {
+            Title = $"Contracts: {_property.Neighborhood}";
             Contracts = new ObservableCollection<ContractItemViewModel>(_property.Contracts.Select(c => new ContractItemViewModel(_navigationService)
             {
                 EndDate = c.EndDate,

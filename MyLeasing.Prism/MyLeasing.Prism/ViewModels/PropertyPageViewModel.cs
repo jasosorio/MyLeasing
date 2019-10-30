@@ -1,11 +1,7 @@
 ﻿using MyLeasing.Common.Models;
-using Prism.Commands;
-using Prism.Mvvm;
 using Prism.Navigation;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace MyLeasing.Prism.ViewModels
 {
@@ -35,9 +31,9 @@ namespace MyLeasing.Prism.ViewModels
         {
             base.OnNavigatedTo(parameters);
 
-            if (parameters.ContainsKey("Property"))
+            if (parameters.ContainsKey("property"))
             {
-                Property = parameters.GetValue<PropertyResponse>("Property");
+                Property = parameters.GetValue<PropertyResponse>("property");
                 Title = $"Property : {Property.Neighborhood}";
                 LoadImages();
             }
